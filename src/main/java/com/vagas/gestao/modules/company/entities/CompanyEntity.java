@@ -22,7 +22,6 @@ public class CompanyEntity {
     private UUID id;
 
     @Pattern(regexp="\\S+", message = "O campo username nao pode conter espaco!")
-    @Length(min=10, max=20, message = "O campo deve conter entre 10 e 20 caracteres")
     private String password;
 
     @NotBlank(message = "O campo username nao pode ser vazio!")
