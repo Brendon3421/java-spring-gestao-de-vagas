@@ -24,8 +24,8 @@ public class CreateCandidateUseCase {
             throw new UserFoundException("Usuario ja existe");
         });
 
-        var password = passwordEncoder.encode(candidateEntity.getPassoword());
-        candidateEntity.setPassoword(password);
+        var password = passwordEncoder.encode(candidateEntity.getPassword());
+        candidateEntity.setPassword(password);
 
         System.out.println("Usuario cadastrado com sucesso");
         return this.candidateRepository.save(candidateEntity);

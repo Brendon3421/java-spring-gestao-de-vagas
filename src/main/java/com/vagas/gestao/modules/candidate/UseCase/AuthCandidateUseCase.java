@@ -30,7 +30,7 @@ public class AuthCandidateUseCase {
             throw new UsernameNotFoundException("Usuario nao encontrado / senha incorreta");
         });
 
-        var passwordMatches = passwordEncoder.matches(authCandidateRequestDto.passowrd(), candidate.getPassoword());
+        var passwordMatches = passwordEncoder.matches(authCandidateRequestDto.password(), candidate.getPassword());
         if(!passwordMatches){
             throw new AuthenticationException();
         }
