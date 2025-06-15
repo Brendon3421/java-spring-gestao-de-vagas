@@ -1,4 +1,4 @@
-package com.vagas.gestao.modules.candidate.UseCase;
+package com.vagas.gestao.modules.candidate.usecase;
 
 import java.util.Arrays;
 
@@ -35,14 +35,16 @@ public class AuthCandidateUseCase {
             throw new AuthenticationException();
         }
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        var expires_in = java.time.Instant.now().plus(java.time.Duration.ofHours(2));
         var token = JWT.create()
                 .withIssuer("javagas")
                 .withSubject(candidate.getId().toString())
                 .withClaim("roles", Arrays.asList("candidate"))
-                .withExpiresAt(java.time.Instant.now().plus(java.time.Duration.ofHours(2)))
+                .withExpiresAt(expires_in)
                 .sign(algorithm);
                 var authcandidateResponseDto = AuthcandidateResponseDto.builder()
                 .acess_token(token)
+                .expires_in(expires_in.toEpochMilli())
                 .build();
                 return authcandidateResponseDto;
     }

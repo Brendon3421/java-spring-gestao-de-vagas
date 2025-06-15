@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vagas.gestao.modules.candidate.UseCase.AuthCandidateUseCase;
 import com.vagas.gestao.modules.candidate.dto.AuthCandidateRequestDto;
+import com.vagas.gestao.modules.candidate.usecase.AuthCandidateUseCase;
 
 @RestController
 @RequestMapping("/candidate")

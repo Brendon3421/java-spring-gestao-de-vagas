@@ -1,4 +1,4 @@
-package com.vagas.gestao.modules.candidate.UseCase;
+package com.vagas.gestao.modules.candidate.usecase;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
