@@ -24,14 +24,14 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> {
             auth.requestMatchers("/candidate/").permitAll();
             auth.requestMatchers("/company/").permitAll();
-            auth.requestMatchers("/auth/company").permitAll();
+            auth.requestMatchers("/company/auth").permitAll();
             auth.requestMatchers("/candidate/auth/").permitAll();
 
             auth.anyRequest().authenticated();
 
         })
-        .addFilterBefore(filter, BasicAuthenticationFilter.class)
-        .addFilterBefore(securityCandidateFilter, BasicAuthenticationFilter.class);
+        .addFilterBefore(securityCandidateFilter, BasicAuthenticationFilter.class)
+        .addFilterBefore(filter, BasicAuthenticationFilter.class);
 
         return http.build();
     }
