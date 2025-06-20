@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.vagas.gestao.modules.candidate.usecase.AuthCandidateUseCase;
 import com.vagas.gestao.providers.JWTCandidateProvider;
 
@@ -43,7 +44,8 @@ public class SecurityCandidateFilter extends OncePerRequestFilter {
                     return;
                 }
                 request.setAttribute("candidate_id", token.getSubject());
-                var roles = token.getClaim("roles");
+                var roles = token.getClaim("roles").asList(String.class);
+
                 var grants = roles.stream().map(role -> new SimpleGrantedAuthority(role.toString())).toList();
             }
             filterChain.doFilter(request, response);
