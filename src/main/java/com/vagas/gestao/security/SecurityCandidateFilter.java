@@ -3,12 +3,12 @@ package com.vagas.gestao.security;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.vagas.gestao.modules.candidate.usecase.AuthCandidateUseCase;
 import com.vagas.gestao.providers.JWTCandidateProvider;
 
 import jakarta.servlet.FilterChain;
@@ -19,14 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class SecurityCandidateFilter extends OncePerRequestFilter {
 
-    private final AuthCandidateUseCase authCandidateUseCase;
-
     @Autowired
     private JWTCandidateProvider jwtProvider;
-
-    SecurityCandidateFilter(AuthCandidateUseCase authCandidateUseCase) {
-        this.authCandidateUseCase = authCandidateUseCase;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -44,9 +38,15 @@ public class SecurityCandidateFilter extends OncePerRequestFilter {
                     return;
                 }
                 request.setAttribute("candidate_id", token.getSubject());
-                var roles = token.getClaim("roles").asList(String.class);
+                var roles = token.getClaim("roles").asList(Object.class);
 
-                var grants = roles.stream().map(role -> new SimpleGrantedAuthority(role.toString())).toList();
+                var grants = roles.stream()
+                        .map(
+                                role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()))
+                        .toList();
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        token.getSubject(), null, grants);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
 
