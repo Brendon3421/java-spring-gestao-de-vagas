@@ -42,11 +42,12 @@ public class AuthCompanyUseCase {
     if (!passwordMatches) {
       throw new AuthenticationException("Username ou senha incorretos");
     }
+
     Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
     var expires_in = Instant.now().plus(Duration.ofHours(2));
 
-    var token = JWT.create().withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
+    var token = JWT.create()
         .withIssuer("javagas")
         .withSubject(company.getId().toString())
         .withClaim("roles", Arrays.asList("COMPANY"))
