@@ -21,40 +21,44 @@ import com.vagas.gestao.modules.company.dto.AuthCompanyResponseDto;
 @Service
 public class AuthCompanyUseCase {
 
-    @Value("${security.token.secret}")
-    private String secretKey;
+  @Value("${security.token.secret}")
+  private String secretKey;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CompanyRepository companyRepository;
+  @Autowired
+  private CompanyRepository companyRepository;
 
-    public  AuthCompanyResponseDto execute(AuthCompanyDto authCompanyDto) throws AuthenticationException {
+  public AuthCompanyResponseDto execute(AuthCompanyDto authCompanyDto) throws AuthenticationException {
     var company = this.companyRepository.findByUsername(authCompanyDto.getUsername()).orElseThrow(
-        () ->  {
-             throw new UsernameNotFoundException("Username ou senha incorretos");
-            });
+        () -> {
+          throw new UsernameNotFoundException("Username ou senha incorretos");
+        });
 
-            //Verificar a senha 
-          var passwordMatches = this.passwordEncoder .matches(authCompanyDto.getPassword(), company.getPassword()
-            );
+    // Verificar a senha
+    var passwordMatches = this.passwordEncoder.matches(authCompanyDto.getPassword(), company.getPassword());
 
-            if(!passwordMatches) {
-                throw new AuthenticationException("Username ou senha incorretos");
-            }
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
-
-            var expires_in = Instant.now().plus(Duration.ofHours(2));
-
-            var token = JWT.create().withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
-            .withIssuer("javagas").withSubject(company.getId().toString())
-            .withClaim("roles", Arrays.asList("COMPANY"))
-            .withExpiresAt(expires_in)
-            .sign(algorithm);
-
-          var authCompantResponseDto =  AuthCompanyResponseDto.builder().acess_token(token).expires_in(expires_in.toEpochMilli()).build();
-            
-            return authCompantResponseDto;
+    if (!passwordMatches) {
+      throw new AuthenticationException("Username ou senha incorretos");
     }
+    Algorithm algorithm = Algorithm.HMAC256(secretKey);
+
+    var expires_in = Instant.now().plus(Duration.ofHours(2));
+
+    var token = JWT.create().withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
+        .withIssuer("javagas")
+        .withSubject(company.getId().toString())
+        .withClaim("roles", Arrays.asList("COMPANY"))
+        .withExpiresAt(expires_in)
+        .sign(algorithm);
+
+    var authCompantResponseDto = AuthCompanyResponseDto.builder()
+        .acess_token(token)
+        .expires_in(expires_in.toEpochMilli()).build();
+    System.out.println("Token gerado: " + authCompantResponseDto.getAcess_token());
+
+
+    return authCompantResponseDto;
+  }
 }

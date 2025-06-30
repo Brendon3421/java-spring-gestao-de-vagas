@@ -5,21 +5,22 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import com.vagas.gestao.modules.company.UseCase.CreateJobUseCase;
 import com.vagas.gestao.modules.company.dto.CreateJobDto;
 import com.vagas.gestao.modules.company.entities.JobEntity;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/company/job")
+@PreAuthorize("hasRole('COMPANY')")
 public class JobController {
     @Autowired
     private CreateJobUseCase createJobUseCase;
