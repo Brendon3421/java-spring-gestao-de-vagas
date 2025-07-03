@@ -1,4 +1,4 @@
-package br.com.rocketseat.gestao_vagas;
+package br.com.Brendon.gestao_vagas;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
