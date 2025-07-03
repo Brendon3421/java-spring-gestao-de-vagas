@@ -19,6 +19,7 @@ import br.com.Brendon.gestao_vagas.modules.candidate.useCases.ProfileCandidateUs
 import br.com.Brendon.gestao_vagas.modules.company.entities.JobEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -61,17 +62,25 @@ public class CandidateController {
   }
 
   @GetMapping("/Job")
-  @PreAuthorize("hasRole('CANDIDATE')")
-  @Tag(name = "Candidate", description = "List all jobs by filter")
-  @Operation(summary = "List all jobs by filter", description = "This endpoint allows candidates to list all jobs based on a specific filter.")
-  @ApiResponse({
-      @ApiResponse(responseCode = "200", co = "Jobs listed successfully"),
-      @ApiResponse(responseCode = "400", description = "Invalid filter provided")
-
-  })
-  public List<JobEntity> findByJobByFilter(@RequestBody String filter) {
-    return this.listAllJobsbyFilterUseCase.execute(filter); 
-
-
+@PreAuthorize("hasRole('CANDIDATE')")
+@Tag(name = "Candidate", description = "List all jobs by filter")
+@Operation(
+    summary = "List all jobs by filter", 
+    description = "This endpoint allows candidates to list all jobs based on a specific filter.",
+    responses = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Jobs listed successfully"
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Invalid filter provided"
+        )
+    }
+)
+@SecurityRequirement(name = "jwt_auth")
+public List<JobEntity> findByJobByFilter(@RequestBody String filter) {
+    return this.listAllJobsbyFilterUseCase.execute(filter);
 }
+
 }
