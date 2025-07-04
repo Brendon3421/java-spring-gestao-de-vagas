@@ -13,12 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.Brendon.gestao_vagas.modules.candidate.CandidateEntity;
+import br.com.Brendon.gestao_vagas.modules.candidate.dto.ProfileCandidateResponseDTO;
 import br.com.Brendon.gestao_vagas.modules.candidate.useCases.CreateCandidateUseCase;
 import br.com.Brendon.gestao_vagas.modules.candidate.useCases.ListAllJobsbyFilterUseCase;
 import br.com.Brendon.gestao_vagas.modules.candidate.useCases.ProfileCandidateUseCase;
 import br.com.Brendon.gestao_vagas.modules.company.entities.JobEntity;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,6 +53,19 @@ public class CandidateController {
 
   @GetMapping("/")
   @PreAuthorize("hasRole('CANDIDATE')")
+  @Tag(name = "Candidate", description = "Get candidate profile")
+  @Operation(
+    summary = "Perfil ", 
+    description = "This endpoint allows candidates to list all jobs based on a specific filter.")
+    
+    @ApiResponses({
+      @ApiResponse(
+        responseCode="200",
+        content= {
+          @Content(schema= @Schema(implementation=ProfileCandidateResponseDTO.class))
+        }
+      )
+    })
   public ResponseEntity<Object> get(HttpServletRequest request) {
     var idCandidate = request.getAttribute("candidate_id");
 
