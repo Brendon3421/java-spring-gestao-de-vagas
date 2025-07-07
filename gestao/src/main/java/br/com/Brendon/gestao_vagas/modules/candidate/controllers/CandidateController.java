@@ -30,6 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/candidate")
+@Tag(name = "Candidate3", description = "Get candidate profile")
 public class CandidateController {
   @Autowired
   private CreateCandidateUseCase createCandidateUseCase;
@@ -42,6 +43,19 @@ public class CandidateController {
   private ListAllJobsbyFilterUseCase listAllJobsbyFilterUseCase;
 
   @PostMapping("/")
+  @Operation(summary= "cadastro de candidato", 
+    description = "This endpoint allows the creation of a new candidate profile.")
+    @ApiResponses({
+      @ApiResponse(
+        responseCode="200",
+        content= {
+          @Content(schema= @Schema(implementation=CandidateEntity.class))
+        }),
+        @ApiResponse(
+        responseCode="400",
+        description="Invalid input provided, such as missing required fields or invalid data format."
+        )
+    })
   public ResponseEntity<Object> create(@Valid @RequestBody CandidateEntity candidateEntity) {
     try {
       var result = createCandidateUseCase.execute(candidateEntity);
@@ -53,11 +67,11 @@ public class CandidateController {
 
   @GetMapping("/")
   @PreAuthorize("hasRole('CANDIDATE')")
-  @Tag(name = "Candidate", description = "Get candidate profile")
+
   @Operation(
     summary = "Perfil ", 
     description = "This endpoint allows candidates to list all jobs based on a specific filter.")
-    
+
     @ApiResponses({
       @ApiResponse(
         responseCode="200",
@@ -80,7 +94,6 @@ public class CandidateController {
 
   @GetMapping("/Job")
 @PreAuthorize("hasRole('CANDIDATE')")
-@Tag(name = "Candidate", description = "List all jobs by filter")
 @Operation(
     summary = "List all jobs by filter", 
     description = "This endpoint allows candidates to list all jobs based on a specific filter.",

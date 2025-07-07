@@ -11,7 +11,6 @@ public class SwaggerConfig {
 
     @Bean // sobresscreve uma implementacao que ja existe
     public OpenAPI opeanAPI() {
-
         return new OpenAPI()
                 .info(new io.swagger.v3.oas.models.info.Info()
                         .title("Gestão de Vagas API")
