@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.Brendon.gestao_vagas.modules.candidate.CandidateEntity;
 import br.com.Brendon.gestao_vagas.modules.candidate.dto.ProfileCandidateResponseDTO;
+import br.com.Brendon.gestao_vagas.modules.candidate.useCases.ApplyJobCandidateUseCase;
 import br.com.Brendon.gestao_vagas.modules.candidate.useCases.CreateCandidateUseCase;
 import br.com.Brendon.gestao_vagas.modules.candidate.useCases.ListAllJobsbyFilterUseCase;
 import br.com.Brendon.gestao_vagas.modules.candidate.useCases.ProfileCandidateUseCase;
@@ -38,24 +39,21 @@ public class CandidateController {
   @Autowired
   private ProfileCandidateUseCase profileCandidateUseCase;
 
-
   @Autowired
   private ListAllJobsbyFilterUseCase listAllJobsbyFilterUseCase;
 
+
+  @Autowired
+  private ApplyJobCandidateUseCase applyJobCandidateUseCase;
+
   @PostMapping("/")
-  @Operation(summary= "cadastro de candidato", 
-    description = "This endpoint allows the creation of a new candidate profile.")
-    @ApiResponses({
-      @ApiResponse(
-        responseCode="200",
-        content= {
-          @Content(schema= @Schema(implementation=CandidateEntity.class))
-        }),
-        @ApiResponse(
-        responseCode="400",
-        description="Invalid input provided, such as missing required fields or invalid data format."
-        )
-    })
+  @Operation(summary = "cadastro de candidato", description = "This endpoint allows the creation of a new candidate profile.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", content = {
+          @Content(schema = @Schema(implementation = CandidateEntity.class))
+      }),
+      @ApiResponse(responseCode = "400", description = "Invalid input provided, such as missing required fields or invalid data format.")
+  })
   public ResponseEntity<Object> create(@Valid @RequestBody CandidateEntity candidateEntity) {
     try {
       var result = createCandidateUseCase.execute(candidateEntity);
@@ -68,18 +66,13 @@ public class CandidateController {
   @GetMapping("/")
   @PreAuthorize("hasRole('CANDIDATE')")
 
-  @Operation(
-    summary = "Perfil ", 
-    description = "This endpoint allows candidates to list all jobs based on a specific filter.")
+  @Operation(summary = "Perfil ", description = "This endpoint allows candidates to list all jobs based on a specific filter.")
 
-    @ApiResponses({
-      @ApiResponse(
-        responseCode="200",
-        content= {
-          @Content(schema= @Schema(implementation=ProfileCandidateResponseDTO.class))
-        }
-      )
-    })
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", content = {
+          @Content(schema = @Schema(implementation = ProfileCandidateResponseDTO.class))
+      })
+  })
   public ResponseEntity<Object> get(HttpServletRequest request) {
     var idCandidate = request.getAttribute("candidate_id");
 
@@ -93,24 +86,30 @@ public class CandidateController {
   }
 
   @GetMapping("/Job")
-@PreAuthorize("hasRole('CANDIDATE')")
-@Operation(
-    summary = "List all jobs by filter", 
-    description = "This endpoint allows candidates to list all jobs based on a specific filter.",
-    responses = {
-        @ApiResponse(
-            responseCode = "200", 
-            description = "Jobs listed successfully"
-        ),
-        @ApiResponse(
-            responseCode = "400", 
-            description = "Invalid filter provided"
-        )
-    }
-)
-@SecurityRequirement(name = "jwt_auth")
-public List<JobEntity> findByJobByFilter(@RequestBody String filter) {
+  @PreAuthorize("hasRole('CANDIDATE')")
+  @Operation(summary = "List all jobs by filter", description = "This endpoint allows candidates to list all jobs based on a specific filter.", responses = {
+      @ApiResponse(responseCode = "200", description = "Jobs listed successfully"),
+      @ApiResponse(responseCode = "400", description = "Invalid filter provided")
+  })
+  @SecurityRequirement(name = "jwt_auth")
+  public List<JobEntity> findByJobByFilter(@RequestBody String filter) {
     return this.listAllJobsbyFilterUseCase.execute(filter);
-}
+  }
 
+  @PostMapping("/job/apply")
+  @PreAuthorize("hasRole('CANDIDATE')")
+  @SecurityRequirement(name = "jwt_auth")
+  @Operation(summary = "Apply for a job", description = "This endpoint allows candidates to")
+  public ResponseEntity<Object> applyJob(HttpServletRequest request,@RequestBody UUID jobId) {
+   
+    var idCandidate = request.getAttribute("candidate_id");
+
+    try {
+      var result = this.applyJobCandidateUseCase.execute(UUID.fromString(idCandidate.toString()), jobId);
+      return ResponseEntity.ok().body(result);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+  }
 }

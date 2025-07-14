@@ -23,34 +23,37 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/company/job")
+@RequestMapping("/company")
 public class JobController {
 
   @Autowired
   private CreateJobUseCase createJobUseCase;
 
-  @PostMapping("/")
+  @PostMapping("/job")
   @PreAuthorize("hasRole('COMPANY')")
-  @Tag(name="VAGAS", description="Criação de vagas")
-  @Operation(
-    description= "Essa funcao e responsavel por cadastrar uma vaga"
-  )
+  @Tag(name = "VAGAS", description = "Criação de vagas")
+  @Operation(description = "Essa funcao e responsavel por cadastrar uma vaga")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", content = {
-      @Content(schema= @Schema(implementation=JobEntity.class))
-    })
+      @ApiResponse(responseCode = "200", content = {
+          @Content(schema = @Schema(implementation = JobEntity.class))
+      })
   })
-  @SecurityRequirement(name="jwt_auth")
+  @SecurityRequirement(name = "jwt_auth")
   public JobEntity create(@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
     var companyId = request.getAttribute("company_id");
 
-    var jobEntity = JobEntity.builder()
-        .benefits(createJobDTO.getBenefits())
-        .companyId(UUID.fromString(companyId.toString()))
-        .description(createJobDTO.getDescription())
-        .level(createJobDTO.getLevel())
-        .build();
+    try {
+      var jobEntity = JobEntity.builder()
+          .benefits(createJobDTO.getBenefits())
+          .companyId(UUID.fromString(companyId.toString()))
+          .description(createJobDTO.getDescription())
+          .level(createJobDTO.getLevel())
+          .build();
 
-    return createJobUseCase.execute(jobEntity);
+      return createJobUseCase.execute(jobEntity);
+    } catch (Exception e) {
+      throw new RuntimeException("Erro ao criar vaga: " + e.getMessage(), e);
+    }
+
   }
 }

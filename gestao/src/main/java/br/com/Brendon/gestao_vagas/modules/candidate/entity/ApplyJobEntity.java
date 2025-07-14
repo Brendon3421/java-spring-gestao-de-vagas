@@ -26,26 +26,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApplyJobEntity {
 
-@Id
-@GeneratedValue(strategy= GenerationType.UUID)
-private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-@ManyToOne
-@JoinColumn(name = "candidate_id", insertable= false , updatable= false)
-private CandidateEntity candidateEntity;
+    @Column(name = "candidate_id")
+    private UUID candidateId;
 
-@JoinColumn(name = "job_id", insertable= false , updatable= false)
-private JobEntity jobEntity;
+    @ManyToOne
+    @JoinColumn(name = "candidate_id", insertable = false, updatable = false)
+    private CandidateEntity candidateEntity;
 
-@ManyToOne
-@Column(name = "candidate_id")
-private UUID candidateId;
+    @Column(name = "job_id")
+    private UUID jobId;
 
-@Column(name = "job_id")
-private UUID jobId;
+    @ManyToOne
+    @JoinColumn(name = "job_id", insertable = false, updatable = false)
+    private JobEntity jobEntity;
 
-@CreationTimestamp
-private LocalDateTime createdAt;
-
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 }
