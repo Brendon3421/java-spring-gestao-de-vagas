@@ -5,4 +5,6 @@ public class UserNotFoundException extends RuntimeException{
         super("Usuário não encontrado");
     }
 
+    
+
 }
